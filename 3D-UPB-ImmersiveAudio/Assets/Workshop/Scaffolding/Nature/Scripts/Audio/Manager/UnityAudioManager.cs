@@ -8,7 +8,25 @@ namespace Workshop.Scaffolding.Nature.Scripts.Audio.Manager
     {
         public AudioSource footstepsSource;
         public AudioClip[] dirtSounds, stoneSounds, woodSounds;
-        public static List<AudioClip[]> footstepSounds;
+        public List<AudioClip[]> footstepSounds;
+
+        public AudioSource daySource;
+        public AudioSource nightSource;
+        public AudioClip dayAmbience;
+        public AudioClip nightAmbience;
+
+        public void Start()
+        {
+            daySource.volume = 1;
+            nightSource.volume = 0;
+
+            daySource.PlayOneShot(dayAmbience);
+            nightSource.PlayOneShot(nightAmbience);
+
+            daySource.loop = true;
+            nightSource.loop = true;
+        }
+
         private void OnEnable()
         {
             fpsController.OnFootstepDetected += HandleFootsteps;
@@ -19,6 +37,8 @@ namespace Workshop.Scaffolding.Nature.Scripts.Audio.Manager
                 stoneSounds,
                 woodSounds
             };
+
+            dayNightCycleController.OnDayNightCycleValueChanged += HandleCycleChange;
         }
 
         private void OnDisable()
@@ -26,6 +46,14 @@ namespace Workshop.Scaffolding.Nature.Scripts.Audio.Manager
             fpsController.OnFootstepDetected -= HandleFootsteps;
 
             footstepSounds = null; // for GC
+
+            dayNightCycleController.OnDayNightCycleValueChanged -= HandleCycleChange;
+        }
+
+        private void HandleCycleChange(float slider)
+        {
+            daySource.volume = 1 - slider;
+            nightSource.volume = slider;
         }
 
         private void HandleFootsteps(AudioUtils.AudioSurfaceType type, float speed)
