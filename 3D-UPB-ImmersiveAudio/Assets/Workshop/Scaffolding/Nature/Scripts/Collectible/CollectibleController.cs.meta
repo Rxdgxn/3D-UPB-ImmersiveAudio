@@ -1,2 +1,13 @@
 fileFormatVersion: 2
 guid: f4b7fb5a750e94945a0e5cc00b3b848d
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - animationController: {instanceID: 0}
+  - audioClip: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

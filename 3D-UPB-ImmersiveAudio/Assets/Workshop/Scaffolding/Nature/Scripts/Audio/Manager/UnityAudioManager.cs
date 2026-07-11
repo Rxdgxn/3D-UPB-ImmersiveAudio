@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Workshop.Scaffolding.Nature.Scripts.Collectible;
 
 namespace Workshop.Scaffolding.Nature.Scripts.Audio.Manager
 {
@@ -14,6 +15,8 @@ namespace Workshop.Scaffolding.Nature.Scripts.Audio.Manager
         public AudioSource nightSource;
         public AudioClip dayAmbience;
         public AudioClip nightAmbience;
+
+        public AudioSource collectibleSource;
 
         public void Start()
         {
@@ -39,6 +42,8 @@ namespace Workshop.Scaffolding.Nature.Scripts.Audio.Manager
             };
 
             dayNightCycleController.OnDayNightCycleValueChanged += HandleCycleChange;
+
+            CollectibleTracker.Instance.OnCollectibleGathered += HandleCollection;
         }
 
         private void OnDisable()
@@ -48,6 +53,14 @@ namespace Workshop.Scaffolding.Nature.Scripts.Audio.Manager
             footstepSounds = null; // for GC
 
             dayNightCycleController.OnDayNightCycleValueChanged -= HandleCycleChange;
+
+            CollectibleTracker.Instance.OnCollectibleGathered -= HandleCollection;
+        }
+
+        private void HandleCollection(CollectibleData data)
+        {
+            collectibleSource.transform.position = data.Position;
+            collectibleSource.PlayOneShot(data.Clip);
         }
 
         private void HandleCycleChange(float slider)
