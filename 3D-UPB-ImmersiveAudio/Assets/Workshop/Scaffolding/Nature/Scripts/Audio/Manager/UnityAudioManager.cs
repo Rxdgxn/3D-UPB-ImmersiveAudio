@@ -23,11 +23,14 @@ namespace Workshop.Scaffolding.Nature.Scripts.Audio.Manager
             daySource.volume = 1;
             nightSource.volume = 0;
 
-            daySource.PlayOneShot(dayAmbience);
-            nightSource.PlayOneShot(nightAmbience);
-
             daySource.loop = true;
             nightSource.loop = true;
+
+            daySource.clip = dayAmbience;
+            nightSource.clip = nightAmbience;
+
+            daySource.Play();
+            nightSource.Play();
         }
 
         private void OnEnable()
