@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 using Workshop.Scaffolding.Nature.Scripts.Collectible;
 
 namespace Workshop.Scaffolding.Nature.Scripts.Audio.Manager
@@ -18,6 +19,12 @@ namespace Workshop.Scaffolding.Nature.Scripts.Audio.Manager
 
         public AudioSource collectibleSource;
 
+        public AudioSource musicSource;
+        public AudioClip musicClip;
+
+        public AudioMixer audioMixer;
+        private string[] mixerOptions = {"Master", "SFX", "Ambience", "Music"};
+
         public void Start()
         {
             daySource.volume = 1;
@@ -31,6 +38,12 @@ namespace Workshop.Scaffolding.Nature.Scripts.Audio.Manager
 
             daySource.Play();
             nightSource.Play();
+
+            musicSource.clip = musicClip;
+            musicSource.loop = true;
+            musicSource.volume = 1;
+
+            musicSource.Play();
         }
 
         private void OnEnable()
@@ -47,6 +60,8 @@ namespace Workshop.Scaffolding.Nature.Scripts.Audio.Manager
             dayNightCycleController.OnDayNightCycleValueChanged += HandleCycleChange;
 
             CollectibleTracker.Instance.OnCollectibleGathered += HandleCollection;
+
+            audioOptionsUIController.OnAudioOptionChanged += HandleOptionChanged;
         }
 
         private void OnDisable()
@@ -58,6 +73,14 @@ namespace Workshop.Scaffolding.Nature.Scripts.Audio.Manager
             dayNightCycleController.OnDayNightCycleValueChanged -= HandleCycleChange;
 
             CollectibleTracker.Instance.OnCollectibleGathered -= HandleCollection;
+
+            audioOptionsUIController.OnAudioOptionChanged -= HandleOptionChanged;
+        }
+
+        private void HandleOptionChanged(AudioUtils.AudioOptionType type, float value)
+        {
+            float dbValue = Mathf.Log10(Mathf.Clamp(value, 0.0001f, 1f)) * 20;
+            audioMixer.SetFloat(mixerOptions[(int) type], dbValue);
         }
 
         private void HandleCollection(CollectibleData data)
