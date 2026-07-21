@@ -24,6 +24,9 @@ namespace Workshop.Scaffolding.Nature.Scripts.Audio.Manager
 
         public AudioMixer audioMixer;
         private string[] mixerOptions = {"Master", "SFX", "Ambience", "Music"};
+        
+        public AudioMixerSnapshot defaultSnapshot;
+        public AudioMixerSnapshot underwaterSnapshot;
 
         public void Start()
         {
@@ -44,6 +47,8 @@ namespace Workshop.Scaffolding.Nature.Scripts.Audio.Manager
             musicSource.volume = 1;
 
             musicSource.Play();
+
+            defaultSnapshot.TransitionTo(0.1f);
         }
 
         private void OnEnable()
@@ -62,6 +67,8 @@ namespace Workshop.Scaffolding.Nature.Scripts.Audio.Manager
             CollectibleTracker.Instance.OnCollectibleGathered += HandleCollection;
 
             audioOptionsUIController.OnAudioOptionChanged += HandleOptionChanged;
+
+            waterVolumeDetector.OnUnderwaterStateChanged += HandleUnderwater;
         }
 
         private void OnDisable()
@@ -75,6 +82,16 @@ namespace Workshop.Scaffolding.Nature.Scripts.Audio.Manager
             CollectibleTracker.Instance.OnCollectibleGathered -= HandleCollection;
 
             audioOptionsUIController.OnAudioOptionChanged -= HandleOptionChanged;
+
+            waterVolumeDetector.OnUnderwaterStateChanged -= HandleUnderwater;
+        }
+
+        private void HandleUnderwater(bool isUnderwater)
+        {
+            if (isUnderwater)
+                underwaterSnapshot.TransitionTo(0.1f);
+            else
+                defaultSnapshot.TransitionTo(0.1f);
         }
 
         private void HandleOptionChanged(AudioUtils.AudioOptionType type, float value)
