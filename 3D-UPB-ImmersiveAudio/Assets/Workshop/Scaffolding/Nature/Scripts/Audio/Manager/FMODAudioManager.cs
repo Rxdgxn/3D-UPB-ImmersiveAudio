@@ -39,7 +39,7 @@ namespace Workshop.Scaffolding.Nature.Scripts.Audio.Manager
         [SerializeField, BoxGroup("FMOD VCAs")]
         private string vcaMusic    = "vca:/VCA_Music";
 
-        private string lastSurfaceTouched; // for proper jump audio
+        private string lastSurfaceTouched = "Dirt"; // for proper jump audio
 
         private void OnEnable()
         {
