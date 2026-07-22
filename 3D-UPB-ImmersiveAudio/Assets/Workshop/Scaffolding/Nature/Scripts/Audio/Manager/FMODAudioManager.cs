@@ -1,5 +1,6 @@
 #if FMOD_INSTALLED
 
+using System;
 using FMODUnity;
 using NaughtyAttributes;
 using UnityEngine;
@@ -22,6 +23,9 @@ namespace Workshop.Scaffolding.Nature.Scripts.Audio.Manager
         
         [SerializeField, BoxGroup("FMOD Events")]
         private EventReference underwaterSnapshot;
+
+        [SerializeField, BoxGroup("FMOD Events")]
+        private EventReference jumpEvent;
         
         [SerializeField, BoxGroup("FMOD VCAs")]
         private string vcaMaster   = "vca:/VCA_Master";
@@ -34,6 +38,41 @@ namespace Workshop.Scaffolding.Nature.Scripts.Audio.Manager
         
         [SerializeField, BoxGroup("FMOD VCAs")]
         private string vcaMusic    = "vca:/VCA_Music";
+
+        private string lastSurfaceTouched; // for proper jump audio
+
+        private void OnEnable()
+        {
+            fpsController.OnFootstepDetected += HandleFootsteps;
+            fpsController.OnJump += HandleJump;
+        }
+
+        private void OnDisable()
+        {
+            fpsController.OnFootstepDetected -= HandleFootsteps;
+            fpsController.OnJump -= HandleJump;
+        }
+
+        private void HandleFootsteps(AudioUtils.AudioSurfaceType type, float speed)
+        {
+            var inst = RuntimeManager.CreateInstance(footstepEvent);
+
+            string surfaceType = type.ToString();
+            lastSurfaceTouched = surfaceType;
+
+            inst.setParameterByNameWithLabel("MaterialType", surfaceType);
+            inst.start();
+            inst.release();
+        }
+
+        private void HandleJump()
+        {
+            var inst = RuntimeManager.CreateInstance(jumpEvent);
+
+            inst.setParameterByNameWithLabel("MaterialType", lastSurfaceTouched);
+            inst.start();
+            inst.release();
+        }
     }
 }
 
